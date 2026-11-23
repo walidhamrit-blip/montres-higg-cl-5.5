@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aurelune — Haute horlogerie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== Couleurs : toutes en variables ===== */
+:root{
+  --sapphire:#1F4BFF;--sapphire2:#5B8CFF;--amethyst:#7C3AED;--amethyst2:#C084FC;
+  --ruby:#E11D74;--ruby2:#FF6BB5;--amber:#FF6B1A;--amber2:#FFB347;
+  --emerald:#00B88A;--turq:#2DE2C0;--gold:#E8C98A;--cream:#FFF8EC;
+  --c0:#1F4BFF;--c1:#1F4BFF;--c2:#5B8CFF;--c3:#7C3AED; /* animées au scroll */
+  --serif:"Cormorant Garamond",Georgia,serif;--sans:Manrope,Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{font-family:var(--sans);font-weight:300;color:var(--cream);background:var(--c0);overflow-x:hidden;
+  text-shadow:0 1px 28px rgba(50,10,80,.35);cursor:none}
+a,button,input{cursor:none;font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+/* ===== Fond mesh gradient fixe ===== */
+#bg{position:fixed;inset:0;z-index:-3;
+  background:radial-gradient(60% 60% at 15% 20%,var(--c1),transparent 70%),
+             radial-gradient(60% 60% at 85% 30%,var(--c2),transparent 70%),
+             radial-gradient(70% 60% at 50% 100%,var(--c3),transparent 70%),var(--c0)}
+.blob{position:fixed;z-index:-2;border-radius:50%;filter:blur(70px);opacity:.55;will-change:transform;pointer-events:none}
+.b1{width:46vw;height:46vw;left:-8vw;top:8vh;background:var(--c2);animation:fl 18s ease-in-out infinite alternate}
+.b2{width:38vw;height:38vw;right:-6vw;bottom:4vh;background:var(--c3);animation:fl 22s ease-in-out infinite alternate-reverse}
+.b3{width:26vw;height:26vw;left:40vw;top:-6vh;background:var(--gold);opacity:.28;animation:fl 26s ease-in-out infinite alternate}
+@keyframes fl{to{transform:translate3d(6vw,-5vh,0) scale(1.15)}}
+#grain{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ===== Navigation ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(18px + env(safe-area-inset-top,0px)) 5vw 18px;transition:background .4s,backdrop-filter .4s}
+nav.s{background:rgba(255,255,255,.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(232,201,138,.35)}
+.logo{font-family:var(--serif);font-size:1.5rem;letter-spacing:.32em;text-decoration:none}
+nav ul{display:flex;gap:2.2rem;list-style:none}
+nav ul a{text-decoration:none;font-size:.82rem;letter-spacing:.14em}
+nav ul a:hover{color:var(--gold)}
+
+/* ===== Progression & scènes ===== */
+#bar{position:fixed;right:2.2vw;top:50%;height:30vh;width:1px;background:rgba(255,248,236,.3);z-index:40;transform:translateY(-50%)}
+#bar i{display:block;width:100%;height:100%;background:var(--gold);transform-origin:top;transform:scaleY(0)}
+#dots{position:fixed;right:1.4vw;top:50%;transform:translateY(-50%);z-index:41;display:none}
+#cur{position:fixed;left:0;top:0;z-index:99;width:14px;height:14px;margin:-7px 0 0 -7px;border:1px solid var(--gold);border-radius:50%;
+  pointer-events:none;transition:width .3s,height .3s,margin .3s,background .3s}
+#cur.h{width:56px;height:56px;margin:-28px 0 0 -28px;background:rgba(232,201,138,.18)}
+
+/* ===== Montre fixe ===== */
+#stage{position:fixed;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none}
+#burst{position:absolute;width:90vmin;height:90vmin;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,248,236,.0) 62%);opacity:0}
+#watchWrap{position:relative;width:min(72vmin,560px);aspect-ratio:1;will-change:transform,opacity}
+#watch,#watchImg{width:100%;height:100%;display:block;overflow:visible}
+#watch g{will-change:transform}
+#sec{transform-origin:200px 200px;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== Scènes ===== */
+section{position:relative;min-height:100vh;display:flex;align-items:center;padding:12vh 8vw;z-index:10}
+.txt{max-width:30rem}
+.right{justify-content:flex-end}
+h1,h2{font-family:var(--serif);font-weight:400;line-height:.98;letter-spacing:-.01em}
+h1{font-size:clamp(3.4rem,10vw,9rem)}
+h2{font-size:clamp(2.6rem,6.4vw,5.8rem);margin-bottom:1.6rem}
+.ln{display:block;overflow:hidden;padding-bottom:.08em}.ln>span{display:block}
+p{font-size:1.05rem;line-height:1.75;max-width:27rem}
+.rule{width:64px;height:1px;background:var(--gold);margin:1.6rem 0}
+.hero{flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding-bottom:12vh}
+.hero p{margin:1.2rem auto 0}
+.scroll{margin-top:2.4rem;width:1px;height:56px;background:linear-gradient(var(--gold),transparent);animation:sc 2s ease-in-out infinite}
+@keyframes sc{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.mats{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1.8rem;max-width:26rem}
+.glass{background:rgba(255,255,255,.14);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(232,201,138,.45);border-radius:18px}
+.mats div{padding:1rem 1.1rem;font-size:.9rem}.mats b{display:block;font-family:var(--serif);font-size:1.3rem;font-weight:500;color:var(--gold)}
+
+/* Collection */
+#collection{flex-direction:column;align-items:stretch;justify-content:center}
+#collection h2{text-align:center}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;perspective:1000px}
+.card{padding:1.6rem;transform-style:preserve-3d;transition:box-shadow .4s;will-change:transform;position:relative;overflow:hidden}
+.card:hover{box-shadow:0 0 60px var(--glow)}
+.card .orb{width:100%;aspect-ratio:1;border-radius:50%;margin-bottom:1.2rem;position:relative;
+  background:radial-gradient(circle at 32% 28%,#fff 0,var(--a) 18%,var(--b) 62%,rgba(255,255,255,.2) 100%);
+  box-shadow:inset 0 0 0 8px rgba(232,201,138,.7),inset 0 0 0 9px rgba(255,255,255,.5)}
+.card .orb::after{content:"";position:absolute;inset:50% auto auto 50%;width:2px;height:34%;background:var(--cream);transform:translate(-50%,-100%) rotate(30deg);transform-origin:bottom}
+.card h3{font-family:var(--serif);font-weight:500;font-size:1.7rem}
+.card .pr{color:var(--gold);margin:.3rem 0 1.1rem;letter-spacing:.06em}
+.btn{display:inline-block;border:1px solid var(--gold);background:transparent;padding:.8rem 1.6rem;border-radius:99px;font-size:.78rem;letter-spacing:.18em;text-decoration:none;transition:background .3s,box-shadow .3s}
+.btn:hover{background:rgba(232,201,138,.25);box-shadow:0 0 30px rgba(232,201,138,.5)}
+
+/* Savoir-faire / final */
+#craft{justify-content:center;text-align:center}
+blockquote{font-family:var(--serif);font-style:italic;font-size:clamp(2rem,5.2vw,4.8rem);line-height:1.12;max-width:62rem}
+cite{display:block;margin-top:2rem;font-style:normal;font-size:.85rem;letter-spacing:.2em;color:var(--gold)}
+#final{flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding-bottom:6vh}
+#final .btn{background:rgba(255,248,236,.2);margin-top:1.6rem;padding:1rem 2.4rem}
+.info{display:flex;flex-wrap:wrap;justify-content:center;gap:2.4rem;margin:2.6rem 0 1.6rem;font-size:.9rem}
+.news{display:flex;gap:.6rem;max-width:26rem;width:100%;padding:.4rem;border-radius:99px}
+.news input{flex:1;min-width:0;background:transparent;border:0;padding:.6rem 1rem;color:var(--cream);outline:0}
+.news input::placeholder{color:rgba(255,248,236,.8)}
+.news button.btn{margin:0;padding:.6rem 1.3rem}
+footer{margin-top:2.4rem;font-size:.75rem;letter-spacing:.12em;opacity:.85}
+
+@media(max-width:860px){
+  nav ul{gap:1rem}nav ul a{font-size:.68rem;letter-spacing:.06em}.logo{font-size:1.15rem}
+  section{align-items:flex-end;padding:12vh 7vw 9vh}
+  .cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;padding-bottom:1rem}
+  .card{flex:0 0 74%;scroll-snap-align:center}
+  #bar{display:none}body,a,button,input{cursor:auto}#cur{display:none}
+  #collection{align-items:stretch}
+}
+@media(prefers-reduced-motion:reduce){.blob,#sec,.scroll{animation:none}}
+</style>
+</head>
+<body>
+<div id="bg"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="grain"></div><div id="cur"></div><div id="bar"><i></i></div>
+
+<nav id="nav">
+  <a class="logo" href="#intro">AURELUNE</a>
+  <ul>
+    <li><a href="#collection">Collection</a></li><li><a href="#craft">Savoir-faire</a></li>
+    <li><a href="#final">Boutique</a></li><li><a href="#final">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ===== MONTRE (fixe, pilotée par le scroll) =====
+     REMPLACER PAR UNE VRAIE PHOTO / RENDU 3D (PNG sans fond) : renseigner src="" de #watchImg
+     (le SVG se masque alors automatiquement). -->
+<div id="stage" aria-hidden="false">
+  <div id="burst"></div>
+  <div id="watchWrap" role="img" aria-label="Montre de luxe Aurelune en acier et or, cadran bleu">
+    <img id="watchImg" alt="Montre Aurelune" src="" hidden>
+    <svg id="watch" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#cfd6e6"/><stop offset=".5" stop-color="#8d98b5"/><stop offset=".75" stop-color="#e9edf7"/><stop offset="1" stop-color="#9aa5c2"/></linearGradient>
+        <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1CC"/><stop offset=".45" stop-color="#E8C98A"/><stop offset="1" stop-color="#B98B3F"/></linearGradient>
+        <radialGradient id="gDial" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#6F93FF"/><stop offset=".55" stop-color="#2A4FD8"/><stop offset="1" stop-color="#241B7A"/></radialGradient>
+        <linearGradient id="gStrap" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9dfee"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#9aa5c2"/></linearGradient>
+        <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      </defs>
+      <g id="strapT"><path d="M150 40 L250 40 L240 120 L160 120Z" fill="url(#gStrap)" stroke="#E8C98A" stroke-width="1.5"/></g>
+      <g id="strapB"><path d="M160 280 L240 280 L250 360 L150 360Z" fill="url(#gStrap)" stroke="#E8C98A" stroke-width="1.5"/></g>
+      <g id="crown"><rect x="354" y="188" width="22" height="24" rx="5" fill="url(#gGold)"/></g>
+      <g id="cas">
+        <circle cx="200" cy="200" r="160" fill="url(#gMetal)"/>
+        <circle cx="200" cy="200" r="148" fill="url(#gGold)"/>
+        <circle cx="200" cy="200" r="138" fill="url(#gMetal)"/>
+      </g>
+      <g id="gears" opacity="0">
+        <circle id="gA" cx="200" cy="200" r="100" fill="none" stroke="#E8C98A" stroke-width="14" stroke-dasharray="6 6" style="transform-origin:200px 200px"/>
+        <circle id="gB" cx="200" cy="200" r="58" fill="none" stroke="#fff" stroke-width="10" stroke-dasharray="4 5" style="transform-origin:200px 200px"/>
+        <circle cx="200" cy="200" r="22" fill="url(#gGold)"/>
+      </g>
+      <g id="dial">
+        <circle cx="200" cy="200" r="126" fill="url(#gDial)"/>
+        <g id="idx" stroke="#FFF1CC" stroke-linecap="round"></g>
+        <text x="200" y="150" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="15" letter-spacing="5" fill="#FFF1CC">AURELUNE</text>
+        <circle cx="200" cy="200" r="126" fill="url(#gGlass)"/>
+      </g>
+      <g id="hands">
+        <g id="hH" style="transform-origin:200px 200px"><path d="M195 205 L200 128 L205 205Z" fill="url(#gGold)"/></g>
+        <g id="hM" style="transform-origin:200px 200px"><path d="M196.5 205 L200 90 L203.5 205Z" fill="#fff"/></g>
+        <g id="sec"><rect x="199.2" y="82" width="1.6" height="136" fill="#FF6BB5"/></g>
+        <circle cx="200" cy="200" r="6" fill="url(#gGold)"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<main>
+<section id="intro" class="hero" data-t="Intro">
+  <h1 class="rv">Le temps,|sublimé.</h1>
+  <p>Aurelune compose des montres où chaque seconde est une promesse.</p>
+  <div class="scroll" aria-hidden="true"></div>
+</section>
+
+<section id="cadran" data-t="Le Cadran">
+  <div class="txt">
+    <h2 class="rv">Le Cadran</h2><div class="rule"></div>
+    <p>Quatre-vingt-seize heures de réserve de marche. Un écart inférieur à deux secondes par jour. Chaque index est poli à la main jusqu’à capter la lumière.</p>
+  </div>
+</section>
+
+<section id="mouvement" class="right" data-t="Le Mouvement">
+  <div class="txt">
+    <h2 class="rv">Le|Mouvement</h2><div class="rule"></div>
+    <p>Trois cent douze composants, assemblés un à un. Un calibre manufacture pensé pour durer plus d’une vie, et visible à travers le fond saphir.</p>
+  </div>
+</section>
+
+<section id="matieres" data-t="Les Matériaux">
+  <div class="txt">
+    <h2 class="rv">Les Matériaux</h2><div class="rule"></div>
+    <p>Rien n’est choisi au hasard : seulement ce qui traverse le temps.</p>
+    <div class="mats">
+      <div class="glass"><b>Acier 904L</b>Poli miroir</div><div class="glass"><b>Or 18 carats</b>Lunette champagne</div>
+      <div class="glass"><b>Saphir</b>Verre traité</div><div class="glass"><b>Bracelet</b>Maillons satinés</div>
+    </div>
+  </div>
+</section>
+
+<section id="collection" data-t="La Collection">
+  <h2 class="rv">La Collection</h2>
+  <div class="cards">
+    <article class="card glass" style="--a:#9db8ff;--b:#1F4BFF;--glow:#5B8CFF"><div class="orb"></div><h3>Saphir</h3><div class="pr">12 400 €</div><a class="btn" href="#final">Découvrir</a></article>
+    <article class="card glass" style="--a:#9ff5de;--b:#00B88A;--glow:#2DE2C0"><div class="orb"></div><h3>Émeraude</h3><div class="pr">13 900 €</div><a class="btn" href="#final">Découvrir</a></article>
+    <article class="card glass" style="--a:#ffb3d8;--b:#E11D74;--glow:#FF6BB5"><div class="orb"></div><h3>Rubis</h3><div class="pr">14 600 €</div><a class="btn" href="#final">Découvrir</a></article>
+    <article class="card glass" style="--a:#ffe0a8;--b:#FF6B1A;--glow:#FFB347"><div class="orb"></div><h3>Ambre</h3><div class="pr">15 800 €</div><a class="btn" href="#final">Découvrir</a></article>
+  </div>
+</section>
+
+<section id="craft" data-t="Savoir-faire">
+  <div><blockquote class="rv">« Nous ne fabriquons pas le temps.|Nous lui donnons une forme. »</blockquote>
+  <cite>L’ATELIER AURELUNE, GENÈVE</cite></div>
+</section>
+
+<section id="final" data-t="Boutique">
+  <h2 class="rv">L’exception|vous attend.</h2>
+  <a class="btn" href="#final">Visiter la boutique</a>
+  <div class="info"><span>12 rue du Rhône, Genève</span><span>+41 22 000 00 00</span><span>atelier@aurelune.ch</span></div>
+  <form class="news glass" id="news"><input type="email" required placeholder="Votre e-mail" aria-label="Adresse e-mail"><button class="btn" type="submit">S’abonner</button></form>
+  <footer>© 2026 Aurelune. Tous droits réservés.</footer>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(function(){
+gsap.registerPlugin(ScrollTrigger);
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+var wide=innerWidth>860;
+var $=function(s){return document.querySelector(s)};
+
+/* Index du cadran */
+var idx=$('#idx'),h='';
+for(var i=0;i<12;i++){var a=i*Math.PI/6,big=i%3===0,r1=big?100:108,r2=116;
+ h+='<line x1="'+(200+Math.sin(a)*r1)+'" y1="'+(200-Math.cos(a)*r1)+'" x2="'+(200+Math.sin(a)*r2)+'" y2="'+(200-Math.cos(a)*r2)+'" stroke-width="'+(big?4:2)+'"/>';}
+idx.innerHTML=h;
+
+/* Photo réelle si fournie */
+var img=$('#watchImg');
+if(img.getAttribute('src')){img.hidden=false;$('#watch').style.display='none';}
+
+/* Titres ligne par ligne */
+document.querySelectorAll('.rv').forEach(function(el){
+ el.innerHTML=el.innerHTML.split('|').map(function(l){return '<span class="ln"><span>'+l+'</span></span>'}).join('');});
+
+/* Nav verre dépoli */
+addEventListener('scroll',function(){$('#nav').classList.toggle('s',scrollY>40)},{passive:true});
+$('#news').addEventListener('submit',function(e){e.preventDefault();this.innerHTML='<span style="padding:.7rem 1.2rem">Merci, à très bientôt.</span>';});
+
+/* Curseur */
+var cur=$('#cur');
+addEventListener('pointermove',function(e){cur.style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0)'});
+document.querySelectorAll('a,button,input,.card').forEach(function(el){
+ el.addEventListener('pointerenter',function(){cur.classList.add('h')});
+ el.addEventListener('pointerleave',function(){cur.classList.remove('h')});});
+
+/* Tilt 3D des cartes */
+document.querySelectorAll('.card').forEach(function(c){
+ c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  c.style.transform='rotateY('+x*14+'deg) rotateX('+(-y*14)+'deg)'});
+ c.addEventListener('pointerleave',function(){c.style.transform=''});});
+
+/* Révélations */
+document.querySelectorAll('.rv').forEach(function(el){
+ var t=gsap.from(el.querySelectorAll('.ln>span'),{yPercent:110,duration:1.1,ease:'power4.out',stagger:.12,paused:reduce});
+ if(!reduce)ScrollTrigger.create({trigger:el,start:'top 82%',end:'bottom 10%',onEnter:function(){t.play()},onLeave:function(){t.reverse()},onEnterBack:function(){t.play()},onLeaveBack:function(){t.reverse()}});});
+document.querySelectorAll('section p,.mats,blockquote+cite,.cards .card,.info,.news,#final .btn').forEach(function(el){
+ if(!reduce)gsap.from(el,{y:40,opacity:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 90%',toggleActions:'play none none reverse'}});});
+
+if(reduce)return;
+
+/* Scroll fluide (Lenis) */
+try{var lenis=new Lenis({lerp:.09,smoothWheel:true});
+ lenis.on('scroll',ScrollTrigger.update);
+ gsap.ticker.add(function(t){lenis.raf(t*1000)});gsap.ticker.lagSmoothing(0);
+ document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var t=$(a.getAttribute('href'));if(t){e.preventDefault();lenis.scrollTo(t)}})});
+}catch(e){}
+
+/* Intro : éclat de lumière */
+gsap.timeline({defaults:{ease:'power3.out'}})
+ .fromTo('#burst',{opacity:1,scale:.2},{opacity:0,scale:1.6,duration:2})
+ .from('#watchWrap',{scale:.5,opacity:0,duration:1.8},0);
+
+/* Dégradés de fond : interpolation continue sur toute la page */
+var pal=[ // c0,c1,c2,c3 par scène
+ ['#1F4BFF','#1F4BFF','#5B8CFF','#7C3AED'],
+ ['#7C3AED','#7C3AED','#C084FC','#E11D74'],
+ ['#E11D74','#E11D74','#FF6BB5','#FF6B1A'],
+ ['#FF6B1A','#FF6B1A','#FFB347','#E8C98A'],
+ ['#7C3AED','#5B8CFF','#C084FC','#E11D74'],
+ ['#00B88A','#00B88A','#2DE2C0','#5B8CFF'],
+ ['#E11D74','#7C3AED','#FF6B1A','#00B88A']];
+var bg=gsap.timeline({scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:1.2}});
+pal.forEach(function(p,i){if(i)bg.to(':root',{'--c0':p[0],'--c1':p[1],'--c2':p[2],'--c3':p[3],duration:1,ease:'none'},i-1);});
+
+/* Montre : rotation, zoom, éclaté, selon la scène */
+var X=wide?22:0,Y=wide?0:-16; // décalage en vw / vh
+var w=gsap.timeline({scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:1.4}});
+gsap.set('#watchWrap',{transformPerspective:900});
+w.to('#watchWrap',{scale:.82,y:wide?'-6vh':'-18vh',rotation:0,duration:1,ease:'none'},0)               /* intro -> 1 */
+ .to('#watchWrap',{scale:wide?2.1:1.5,x:wide?X+'vw':0,y:wide?'0vh':'-14vh',rotation:-14,duration:1,ease:'none'},1) /* cadran : macro */
+ .to('#watchWrap',{scale:.88,x:wide?-X+'vw':0,y:wide?'0vh':'-16vh',rotation:-34,rotationX:wide?0:0,duration:1,ease:'none'},2) /* mouvement */
+ .to('#watchWrap',{scale:wide?1.5:1.1,x:wide?X+'vw':0,y:wide?'0vh':'-16vh',rotation:12,duration:1,ease:'none'},3) /* matériaux */
+ .to('#watchWrap',{scale:.55,opacity:.0,x:0,y:'-10vh',rotation:40,duration:1,ease:'none'},4)       /* collection */
+ .to('#watchWrap',{scale:.5,opacity:0,duration:1,ease:'none'},5)                                    /* savoir-faire */
+ .to('#watchWrap',{scale:1,opacity:1,x:0,y:wide?'-14vh':'-18vh',rotation:0,duration:1,ease:'none'},6); /* final */
+
+/* Éclaté du mouvement (scène 3) */
+var ex=function(sel,y,t){w.to(sel,{y:y,duration:.8,ease:'none'},t);};
+w.to('#gears',{opacity:1,duration:.5,ease:'none'},1.7)
+ .to('#hands',{y:-150,duration:.8,ease:'none'},1.9).to('#dial',{y:-75,opacity:.7,duration:.8,ease:'none'},1.9)
+ .to('#cas',{y:80,duration:.8,ease:'none'},1.9).to('#strapT',{y:-40,duration:.8,ease:'none'},1.9)
+ .to('#strapB',{y:150,duration:.8,ease:'none'},1.9).to('#crown',{x:40,duration:.8,ease:'none'},1.9)
+ .to('#hands,#dial,#cas,#strapT,#strapB,#crown',{x:0,y:0,opacity:1,duration:.9,ease:'none'},2.85)
+ .to('#gears',{opacity:0,duration:.3,ease:'none'},3.2);
+/* Engrenages + aiguilles liés au scroll */
+gsap.to('#gA',{rotation:720,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+gsap.to('#gB',{rotation:-1080,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+gsap.to('#hM',{rotation:1440,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+gsap.to('#hH',{rotation:120,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+
+/* Barre de progression */
+gsap.to('#bar i',{scaleY:1,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+
+/* Parallaxe des halos */
+gsap.to('.b1',{yPercent:-40,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+gsap.to('.b2',{yPercent:30,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:true}});
+})();
+</script>
+</body>
+</html>
